@@ -126,7 +126,7 @@ module DjSplit
 
     # Collision is still OK. Probabilty if collision is negligible. 
     def get_random_job_group_id
-      Time.now.to_i.to_s + rand(1000000).to_s
+      Time.now.to_i.to_s[5..-1] + rand(1000000000).to_s
     end
 
     # Check for stale jobs 1 out of 2000 times.
