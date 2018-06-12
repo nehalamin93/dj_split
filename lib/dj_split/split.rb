@@ -124,7 +124,7 @@ module DjSplit
       (@split_options[:by] || DEFAULT_SPLIT_INDEX) - 2
     end
 
-    # Collision is still OK. Probabilty if collision is negligible. 
+    # Collision is still OK. Probabilty of collision is negligible. 
     def get_random_job_group_id
       Time.now.to_i.to_s[5..-1] + rand(1000000000).to_s
     end
