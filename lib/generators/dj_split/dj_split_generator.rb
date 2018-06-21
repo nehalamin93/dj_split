@@ -11,7 +11,7 @@ class DjSplitGenerator < Rails::Generators::Base
   end
 
   def create_migration_file
-    migration_template('migration.rb', 'db/migrate/add_job_group_id_to_delayed_jobs.rb') if defined?(ActiveRecord)
+    migration_template('migration.rb', 'db/migrate/add_split_group_id_to_delayed_jobs.rb') if defined?(ActiveRecord)
   end
 
   def self.next_migration_number(dirname)

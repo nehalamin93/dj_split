@@ -6,16 +6,22 @@
 # Purpose: To distribute the load among multiple application servers.
 #
 # Usage:
-# => DjSplit::Split.new(queue_options: {queue: queue_name}, split_options: {size: 1000, by: 2}).enqueue(match_client, "bulk_mentor_match", student_ids, mentor_ids)
+# class A
+#   def self.function1(user_ids_array1, other_attr1)
+#     //do something
+#   end
+# end
+#
+# => DjSplit::Split.new(queue_options: {queue: queue_name}, split_options: {size: 1000, by: 2}).enqueue(A, "function1", user_ids_array1, other_attr1)
 # instead of:
-# => match_client.bulk_mentor_match(student_ids, mentor_ids)
+# => A.function1(user_ids_array1, other_attr1)
 #
 # Note: Arguments must be in exact order.
-# "enqueue" parameters are (object, function_name, arguments of that function)
+# "enqueue" parameters are (object/Class, function_name, arguments of that function)
 # split_options[:size] is splitting size
-# split_options[:by] is position of splitting attribute in the enqueue function. In above example, splitting attribute is student_ids and has position 2(>=2).
+# split_options[:by] is position of splitting attribute in the enqueue function. In above example, splitting attribute is user_ids_array1 and has position 2(>=2).
 #
-# Here we are splitting on the basis of student_ids. 
+# Here we are splitting on the basis of user_ids_array1. 
 # We can also specify the :splitting_size, Otherwise it will take default Optimal Splitting Size
 # After splitting and enqueing, we wait for the sub-jobs to be complete and also process subjobs instead of blocking.
 #
@@ -34,8 +40,8 @@ module DjSplit
 
     def initialize(options)
       @queue_options  = options[:queue_options]
-      @job_group_id = get_random_job_group_id
-      @queue_options.merge!(job_group_id: @job_group_id)
+      @split_group_id = get_random_split_group_id
+      @queue_options.merge!(split_group_id: @split_group_id)
       @split_options = options[:split_options]
     end
 
@@ -65,12 +71,12 @@ module DjSplit
 
     def pick_and_invoke_delayed_job
       worker_object = Delayed::Worker.new
-      worker_object.job_group_id = @job_group_id
+      worker_object.split_group_id = @split_group_id
       worker_object.work_off(1)
     end
 
     def pending_jobs_of_group_id?
-      Delayed::Job.where(job_group_id: @job_group_id, locked_at: nil).exists?
+      Delayed::Job.where(split_group_id: @split_group_id, locked_at: nil).exists?
     end
 
     def waiting_for_other_workers_to_process_jobs
@@ -85,11 +91,11 @@ module DjSplit
     # handles a scenario when Job is locked by a worker and worker got killed
     def handle_stale_jobs
       stale_jobs = get_processing_jobs_by_other_workers.select{ |dj| !get_delayed_jobs_pids.include?(dj.locked_by.split("pid:")[1].strip) }
-      raise "Stale Delayed Jobs of Group Id(#{@job_group_id}): #{stale_jobs.pluck(:id)}" if stale_jobs.present?
+      raise "Stale Delayed Jobs of Group Id(#{@split_group_id}): #{stale_jobs.pluck(:id)}" if stale_jobs.present?
     end
 
     def get_processing_jobs_by_other_workers
-      Delayed::Job.where(job_group_id: @job_group_id, failed_at: nil).where.not(locked_by: nil)
+      Delayed::Job.where(split_group_id: @split_group_id, failed_at: nil).where.not(locked_by: nil)
     end
 
     def get_delayed_jobs_pids
@@ -104,12 +110,12 @@ module DjSplit
     end
 
     def handle_failed_jobs
-      failed_jobs = Delayed::Job.where(job_group_id: @job_group_id).where.not(failed_at: nil)
-      raise "Failed Delayed Jobs of Group Id(#{@job_group_id}): #{failed_jobs.pluck(:id)}" if failed_jobs.exists?
+      failed_jobs = Delayed::Job.where(split_group_id: @split_group_id).where.not(failed_at: nil)
+      raise "Failed Delayed Jobs of Group Id(#{@split_group_id}): #{failed_jobs.pluck(:id)}" if failed_jobs.exists?
     end
 
     def jobs_processed_by_other_workers_currently?
-      Delayed::Job.where(job_group_id: @job_group_id, failed_at: nil).exists?
+      Delayed::Job.where(split_group_id: @split_group_id, failed_at: nil).exists?
     end
 
     def get_split_size
@@ -125,7 +131,7 @@ module DjSplit
     end
 
     # Collision is still OK. Probabilty of collision is negligible. 
-    def get_random_job_group_id
+    def get_random_split_group_id
       Time.now.to_i.to_s[5..-1] + rand(1000000000).to_s
     end
 
