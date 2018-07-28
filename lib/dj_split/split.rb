@@ -1,37 +1,3 @@
-# 
-# Class is designed to Split Time Taking Delayed Jobs, Crons, Bulk Operations, etc into smaller size multiple Delayed Jobs.
-# These Jobs should be Independent of each other.
-# Splitting will be done on one parameter only.
-#
-# Purpose: To distribute the load among multiple application servers.
-#
-# Usage:
-# class A
-#   def self.function1(user_ids_array1, other_attr1)
-#     //do something
-#   end
-# end
-#
-# => DjSplit::Split.new(queue_options: {queue: queue_name}, split_options: {size: 1000, by: 2}).enqueue(A, "function1", user_ids_array1, other_attr1)
-# instead of:
-# => A.function1(user_ids_array1, other_attr1)
-#
-# Note: Arguments must be in exact order.
-# "enqueue" parameters are (object/Class, function_name, arguments of that function)
-# split_options[:size] is splitting size
-# split_options[:by] is position of splitting attribute in the enqueue function. In above example, splitting attribute is user_ids_array1 and has position 2(>=2).
-#
-# Here we are splitting on the basis of user_ids_array1. 
-# We can also specify the :splitting_size, Otherwise it will take default Optimal Splitting Size
-# After splitting and enqueing, we wait for the sub-jobs to be complete and also process subjobs instead of blocking.
-#
-# Steps:
-# => 1) Split splitting params into array of arrays. Each array element is of size <= split_options[:size]   
-# => 2) Loop through the array and insert it into Delayed Job queue(array element is placed in place of splitting params)
-# => 3) Queue jobs will be picked and executed by workers
-# => 4) Instead of waiting for jobs to be picked and processed by workers we will also pick and process those job
-#
-#
 module DjSplit
   class Split
 
