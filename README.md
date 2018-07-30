@@ -9,7 +9,7 @@ Class behaves like **Delayed Job Worker**, it also **picks and processes delayed
 
 **Splitting** will be done on **one parameter** only.
 
-## Purpose:
+## Purpose
 
 To distribute the load among **Multiple Workers**.
 
@@ -34,7 +34,7 @@ Run the required database migrations:
     $ script/rails generate dj_split
     $ rake db:migrate
 
-## Usage:
+## Usage
 
 ```ruby
 class A
@@ -49,7 +49,7 @@ end
 
       $ DjSplit::Split.new(queue_options: {queue: queue_name}, split_options: {size: 1000, by: 2}).enqueue(A, "function1", user_ids_array1, other_attr1)
 
-## Note: 
+## Note
 
 * Arguments must be in exact order.
 * "enqueue" parameters are (object/class, function_name, arguments of that function)
@@ -60,7 +60,7 @@ end
 * We can also specify the: splitting_size, Otherwise it will take default Optimal Splitting Size
 * After splitting and enqueuing, instead of waiting for the sub-jobs to be complete this function will behave like delayed job worker and will pick and process the sub-jobs instead of blocking.
 
-## What DjSplit::Enqueue does:
+## What DjSplit::Enqueue does
 
 * Split the mentioned parameter into array of chunks(arrays) of size = split_options[:size]. 
 * Loop through the array and insert each chunk into Delayed Job queue(array element is placed in place of splitting params)

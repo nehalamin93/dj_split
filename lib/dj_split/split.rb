@@ -5,10 +5,10 @@ module DjSplit
     DEFAULT_SPLIT_INDEX = 2
 
     def initialize(options)
-      @queue_options  = options[:queue_options]
+      @queue_options  = options[:queue_options] || {}
       @split_group_id = get_random_split_group_id
       @queue_options.merge!(split_group_id: @split_group_id)
-      @split_options = options[:split_options]
+      @split_options = options[:split_options] || {}
     end
 
     def enqueue(object, method_name, *args)
