@@ -18,7 +18,7 @@ To distribute the load among **Multiple Workers**.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'dj_split'
+gem 'dj_split' or gem 'dj_split', :git => 'https://github.com/nehalamin93/dj_split.git'
 ```
 
 And then execute:
@@ -39,7 +39,7 @@ Run the required database migrations:
 ```ruby
 class A
   def self.function1(user_ids_array1, other_attr1)
-    //do something
+    #do something
   end
 end
 ```
