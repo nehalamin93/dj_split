@@ -20,5 +20,14 @@ class DjSplitTest < ActiveSupport::TestCase
     assert_equal 2, (Time.now - t).to_i
     assert_equal 0, Delayed::Job.count
   end
+
+  def test_enqueue
+    Delayed::Job.delete_all
+    mock_obj = mock()
+    Delayed::PerformableMethod.stubs(:new).returns(mock_obj)
+    Delayed::Job.expects(:enqueue).once 
+    DjSplit::Split.new(queue_options: {queue: "high_priority"}, split_options: {size: 1000, by: 2}).enqueue(Break, "aggr", Array(0...100))
+    assert_equal 0, Delayed::Job.count
+  end
 end
 
