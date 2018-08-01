@@ -1,1 +1,10 @@
+.bundle
+coverage
+doc/
 pkg
+tmp
+Gemfile.lock
+bin/
+tmp
+log
+
