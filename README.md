@@ -5,7 +5,7 @@ These **Jobs** should be **mutually exclusive** of each other and should be able
 
 These **Jobs** can be picked by **Delayed Job Workers** within or across **Multiple Servers**.
 
-Performance can improve up to n+1 times, where n = number of workers picking the jobs.
+**Performance** can improve up to **n+1 times**, where **n = number of workers** picking the jobs.
 
 Class behaves like **Delayed Job Worker**, it also **picks and processes delayed job** entries.
 
@@ -13,7 +13,7 @@ Class behaves like **Delayed Job Worker**, it also **picks and processes delayed
 
 ## Purpose
 
-To distribute the load among **Multiple Workers**.
+To distribute the load among **Multiple Workers** and to improve **Performance**.
 
 ## Installation
 
