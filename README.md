@@ -3,7 +3,9 @@
 Class [**"DjSplit::Split"**](https://github.com/nehalamin93/dj_split/blob/master/lib/dj_split/split.rb) is designed to **Split Time Taking Delayed Jobs, Crons, Bulk Operations, etc** into **smaller size multiple Delayed Jobs**.
 These **Jobs** should be **mutually exclusive** of each other and should be able to run **concurrently**.
 
-These **Jobs** can be picked by **Delayed Job Workers** within or across **Multiple Servers**. 
+These **Jobs** can be picked by **Delayed Job Workers** within or across **Multiple Servers**.
+
+Performance can improve up to n+1 times, where n = number of workers picking the jobs.
 
 Class behaves like **Delayed Job Worker**, it also **picks and processes delayed job** entries.
 
@@ -18,7 +20,7 @@ To distribute the load among **Multiple Workers**.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'dj_split' or gem 'dj_split', :git => 'https://github.com/nehalamin93/dj_split.git'
+gem 'dj_split'
 ```
 
 And then execute:
@@ -43,7 +45,7 @@ class A
   end
 end
 ```
-      $ A.function1(user_ids_array1, other_attr1)
+      $ A.delay(queue: queue_name).function1(user_ids_array1, other_attr1)
 
   can be replace by:
 
