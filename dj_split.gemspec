@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["nehalamin93@gmail.com"]
 
   spec.summary       = %q{Splitting, Enqueuing and Executing time taking jobs(eg: Delayed Job) without Blocking.}
-  spec.description   = %q{Gem is designed to Split Time Taking Jobs(Delayed Jobs, Crons, Bulk Operations, etc.) into smaller size mutually exclusive Delayed Jobs. These Delayed Jobs can be picked by multiple workers in single or multiple servers. After splitting and enqueuing, the gem will wait for the sub-jobs to be complete and also process sub-jobs instead of blocking.Performance can improve up to n+1 times, where n = number of workers picking the jobs.}
+  spec.description   = %q{Gem is designed to Split Time Taking Jobs(Delayed Jobs, Crons, Bulk Operations, etc.) into smaller size mutually exclusive Delayed Jobs. These Delayed Jobs can be picked by multiple workers in single or multiple servers. After splitting and enqueuing, the process will wait for the sub-jobs to complete and also processes sub-jobs instead of blocking. Performance can improve up to n+1 times, where n = number of workers picking the jobs.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
