@@ -1,9 +1,11 @@
 # Delayed Job Split Feature
 
 Class [**"DjSplit::Split"**](https://github.com/nehalamin93/dj_split/blob/master/lib/dj_split/split.rb) is designed to **Split Time Taking Delayed Jobs, Crons, Bulk Operations, etc** into **smaller size multiple Delayed Jobs**.
-These **Jobs** should be **mutually exclusive** of each other and should be able to run **concurrently**.
+These **Sub-Jobs** should be **mutually exclusive** of each other and should be able to run **concurrently**.
 
-These **Jobs** can be picked by **Delayed Job Workers** within or across **Multiple Servers**.
+**Parallelism** can be achieved across **multiple servers** through **Delayed Jobs** which can directly impact performance.
+
+These **Sub-Jobs** can be picked by **Delayed Job Workers** within or across **Multiple Servers**.
 
 **Performance** can improve up to **n+1 times**, where **n = number of workers** picking the jobs.
 
@@ -45,9 +47,9 @@ class A
   end
 end
 ```
-      $ A.delay(queue: queue_name).function1(user_ids_array1, other_attr1)
+      $ A.function1(user_ids_array1, other_attr1)
 
-  can be replace by:
+  to:
 
       $ DjSplit::Split.new(queue_options: {queue: queue_name}, split_options: {size: 1000, by: 2}).enqueue(A, "function1", user_ids_array1, other_attr1)
 
