@@ -3,6 +3,8 @@ module DjSplit
 
     OPTIMAL_SPLIT_SIZE = 200
     DEFAULT_SPLIT_INDEX = 2
+    STALE_JOBS_TIMEOUT = 900 # Seconds. Can be passed in options.
+    SLEEP_TIME = 0.2 # Seconds.
 
     def initialize(options)
       @queue_options  = options[:queue_options] || {}
@@ -49,30 +51,19 @@ module DjSplit
       count = 0
       while(jobs_processed_by_other_workers_currently?)
         count += 1
-        sleep(1.0/5.0)
-        handle_stale_jobs if check_stale_jobs?(count)
+        sleep(SLEEP_TIME)
+        handle_stale_jobs if check_for_timeout?(count)
       end
     end
 
-    # handles a scenario when Job is locked by a worker and worker got killed
+    # Raise an error in scenario such as: Job is locked by a worker and worker got killed
     def handle_stale_jobs
-      stale_jobs = get_processing_jobs_by_other_workers.select{ |dj| !get_delayed_jobs_pids.include?(dj.locked_by.split("pid:")[1].strip) }
-      raise "Stale Delayed Jobs of Group Id(#{@split_group_id}): #{stale_jobs.pluck(:id)}" if stale_jobs.present?
+      stale_jobs = get_processing_jobs_by_other_workers
+      raise "Stale Delayed Jobs of Group Id(#{@split_group_id}): #{stale_jobs.pluck(:id)}"
     end
 
     def get_processing_jobs_by_other_workers
       Delayed::Job.where(split_group_id: @split_group_id, failed_at: nil).where.not(locked_by: nil)
-    end
-
-    def get_delayed_jobs_pids
-      bash_op = `ps aux | grep delayed_job  | grep -v 'grep' | grep -v 'bin/sh' | grep -v 'tail' | grep -v 'ruby' | grep -v 'trace'` 
-      processes = bash_op.split("\n")
-      pid_array = []
-      processes.each do |process|
-        split_process = process.split(" ")
-        pid_array << split_process[1]
-      end
-      pid_array
     end
 
     def handle_failed_jobs
@@ -88,7 +79,11 @@ module DjSplit
       @split_options[:size] || OPTIMAL_SPLIT_SIZE
     end
 
-    def get_sliced_ids(ids) 
+    def get_stale_job_timeout_value
+      @split_options[:timeout] || STALE_JOBS_TIMEOUT
+    end
+
+    def get_sliced_ids(ids)
       ids.each_slice(get_split_size)
     end
 
@@ -101,9 +96,9 @@ module DjSplit
       Time.now.to_i.to_s[5..-1] + rand(1000000000).to_s
     end
 
-    # Check for stale jobs 1 out of 2000 times.
-    def check_stale_jobs?(count)
-      (count%2000 == 1999) 
+    # Check whether the timeout is reached?
+    def check_for_timeout?(count)
+      (SLEEP_TIME * count) > get_stale_job_timeout_value
     end
   end 
 end
