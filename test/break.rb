@@ -12,9 +12,6 @@ gemfile(true) do
   gem "delayed_job", '>= 3.0'
   gem "delayed_job_active_record", '>= 0.4'
   gem "sqlite3"
-  gem "mocha"
-  gem 'rspec'
-  # gem "pg", "0.19.0"
 end
 
 require "minitest/autorun"
