@@ -1,13 +1,15 @@
 **If you're viewing this at https://github.com/nehalamin93/dj_split,
 you're reading the documentation for the master branch.
 [View documentation for the latest release
-(1.0.1).](https://github.com/nehalamin93/dj_split/tree/v1.0.1)**
+(1.1.1).](https://github.com/nehalamin93/dj_split/tree/v1.1.1)**
 
 Delayed Job Split Feature
 =========================
-[![Gem Version](https://badge.fury.io/rb/dj_split.png)][gem]
+[![Gem Version](https://img.shields.io/badge/gem%20version-1.1.1-blue.svg)][gem]
+[![Version Status](https://img.shields.io/badge/tag-1.1.1-green.svg)][tag]
 
 [gem]: https://rubygems.org/gems/dj_split
+[tag]: https://github.com/nehalamin93/dj_split/tree/v1.1.1
 
 Class [**"DjSplit::Split"**](https://github.com/nehalamin93/dj_split/blob/master/lib/dj_split/split.rb) is designed to **Split Time Taking Delayed Jobs, Crons, Bulk Operations, etc** into **smaller size multiple Delayed Jobs**.
 These **Sub-Jobs** should be **mutually exclusive** of each other and should be able to run **concurrently**.
